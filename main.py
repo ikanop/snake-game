@@ -128,14 +128,20 @@ def change_direction():
             direction = new_direction
 
 
-def add_to_queue(input):
+def add_to_queue(new_input):
 
-    global input_queue
+    global input_queue, direction
+
+    if len(input_queue) == 0 and new_input == direction:
+        return
+
+    if len(input_queue) > 0 and input_queue[-1] == new_input:
+        return
 
     if len(input_queue) >= 3:
         return
 
-    input_queue.append(input)
+    input_queue.append(new_input)
 
     print(input_queue)
 

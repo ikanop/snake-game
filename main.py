@@ -132,10 +132,15 @@ def add_to_queue(new_input):
 
     global input_queue, direction
 
-    if (direction == "up" and new_input == "down") or \
-        (direction == "down" and new_input == "up") or \
-        (direction == "right" and new_input == "left") or \
-        (direction == "left" and new_input == "right"):
+    if len(input_queue) > 0:
+        last_direction = input_queue[-1]
+    else:
+        last_direction = direction
+
+    if (last_direction == "up" and new_input == "down") or \
+        (last_direction == "down" and new_input == "up") or \
+        (last_direction == "right" and new_input == "left") or \
+        (last_direction == "left" and new_input == "right"):
         return
 
     if len(input_queue) == 0 and new_input == direction:

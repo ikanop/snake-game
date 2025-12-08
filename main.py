@@ -7,7 +7,8 @@ GAME_HEIGHT = 800
 SPEED = 150
 SPACE_SIZE = 100
 BODY_PARTS = 3
-SNAKE_COLOR = "#00FF00"
+SNAKE_BODY_COLOR = "yellow"
+SNAKE_HEAD_COLOR = "blue"
 FOOD_COLOR = "#FF0000"
 BACKGROUND_COLOR = "#000000"
 input_queue = []
@@ -25,7 +26,7 @@ class Snake:
             self.coordinates.append([0, 0])
 
         for x, y in self.coordinates:
-            square = canvas.create_rectangle(x, y, x + SPACE_SIZE, y + SPACE_SIZE, fill=SNAKE_COLOR, tags="snake")
+            square = canvas.create_rectangle(x, y, x + SPACE_SIZE, y + SPACE_SIZE, fill=SNAKE_BODY_COLOR, tags="snake")
             self.squares.append(square)
 
 
@@ -49,8 +50,6 @@ class Food:
 
 def next_turn(snake, food):
 
-    global can_turn
-
     change_direction()
 
     x, y = snake.coordinates[0]
@@ -66,14 +65,13 @@ def next_turn(snake, food):
 
     snake.coordinates.insert(0, (x, y))
 
-    x, y = snake.coordinates[0]
-    square = canvas.create_rectangle(x, y, x + SPACE_SIZE, y + SPACE_SIZE, fill=SNAKE_COLOR)
+    square = canvas.create_rectangle(x, y, x + SPACE_SIZE, y + SPACE_SIZE, fill=SNAKE_BODY_COLOR)
     snake.squares.insert(0, square)
 
     for body_square in snake.squares[1:]:
-        canvas.itemconfig(body_square, fill=SNAKE_COLOR)
+        canvas.itemconfig(body_square, fill=SNAKE_BODY_COLOR)
 
-    canvas.itemconfig(snake.squares[0], fill="blue")
+    canvas.itemconfig(snake.squares[0], fill=SNAKE_HEAD_COLOR)
 
     if x == food.coordinates[0] and y == food.coordinates[1]:
 
@@ -97,10 +95,8 @@ def next_turn(snake, food):
 
     if check_collisions(snake):
         game_over()
-
     elif victory():
         return
-
     else:
         window.after(SPEED, next_turn, snake, food)
 
@@ -210,6 +206,7 @@ label.pack()
 
 canvas = Canvas(window, bg=BACKGROUND_COLOR, height=GAME_HEIGHT, width=GAME_WIDTH)
 canvas.pack()
+
 
 window.update()
 

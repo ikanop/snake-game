@@ -1,4 +1,4 @@
-from tkinter import *
+from tkinter import Tk, Canvas, Label, ALL
 import random
 
 
@@ -18,12 +18,11 @@ class Snake:
 
     def __init__(self):
 
-        self.body_size = BODY_PARTS
         self.coordinates = []
         self.squares = []
 
         for i in range(0, BODY_PARTS):
-            self.coordinates.append([0, 0])
+            self.coordinates.append((i*SPACE_SIZE, 0))
 
         for x, y in self.coordinates:
             square = canvas.create_rectangle(x, y, x + SPACE_SIZE, y + SPACE_SIZE, fill=SNAKE_BODY_COLOR, tags="snake")
@@ -44,7 +43,7 @@ class Food:
 
         x, y = random.choice(free_positions)
 
-        self.coordinates = [x, y]
+        self.coordinates = (x, y)
         canvas.create_oval(x, y, x + SPACE_SIZE, y + SPACE_SIZE, fill=FOOD_COLOR, tags="food")
 
 
@@ -83,6 +82,9 @@ def next_turn(snake, food):
 
         canvas.delete("food")
 
+        if victory():
+            return
+
         food = Food()
 
     else:
@@ -95,8 +97,6 @@ def next_turn(snake, food):
 
     if check_collisions(snake):
         game_over()
-    elif victory():
-        return
     else:
         window.after(SPEED, next_turn, snake, food)
 
@@ -150,24 +150,19 @@ def add_to_queue(new_input):
 
     input_queue.append(new_input)
 
-    print(input_queue)
-
 
 def check_collisions(snake):
 
     x, y = snake.coordinates[0]
 
     if x < 0 or x >= GAME_WIDTH:
-        print("You died: hit left/right wall")
         return True
 
     elif y < 0 or y >= GAME_HEIGHT:
-        print("You died: hit top/bottom wall")
         return True
 
     for body_part in snake.coordinates[1:]:
         if x == body_part[0] and y == body_part[1]:
-            print("You died: ran into your own body at", body_part)
             return True
 
     return False
@@ -221,13 +216,13 @@ y = int((screen_height/2) - (window_height/2))
 window.geometry(f"{window_width}x{window_height}+{x}+{y}")
 
 for key in ['<Left>', '<a>']:
-    window.bind(key, lambda event: add_to_queue('left'))
+    window.bind(key, lambda event, d='left': add_to_queue(d))
 for key in ['<Right>', '<d>']:
-    window.bind(key, lambda event: add_to_queue('right'))
+    window.bind(key, lambda event, d='right': add_to_queue(d))
 for key in ['<Up>', '<w>']:
-    window.bind(key, lambda event: add_to_queue('up'))
+    window.bind(key, lambda event, d='up': add_to_queue(d))
 for key in ['<Down>', '<s>']:
-    window.bind(key, lambda event: add_to_queue('down'))
+    window.bind(key, lambda event, d='down': add_to_queue(d))
 
 snake = Snake()
 

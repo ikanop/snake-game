@@ -15,22 +15,27 @@ input_queue = []
 
 
 class Snake:
-
     def __init__(self):
 
         self.coordinates = []
         self.squares = []
 
         for i in range(0, BODY_PARTS):
-            self.coordinates.append((i*SPACE_SIZE, 0))
+            self.coordinates.append((i * SPACE_SIZE, 0))
 
         for x, y in self.coordinates:
-            square = canvas.create_rectangle(x, y, x + SPACE_SIZE, y + SPACE_SIZE, fill=SNAKE_BODY_COLOR, tags="snake")
+            square = canvas.create_rectangle(
+                x,
+                y,
+                x + SPACE_SIZE,
+                y + SPACE_SIZE,
+                fill=SNAKE_BODY_COLOR,
+                tags="snake",
+            )
             self.squares.append(square)
 
 
 class Food:
-
     def __init__(self):
 
         all_positions = [
@@ -44,7 +49,9 @@ class Food:
         x, y = random.choice(free_positions)
 
         self.coordinates = (x, y)
-        canvas.create_oval(x, y, x + SPACE_SIZE, y + SPACE_SIZE, fill=FOOD_COLOR, tags="food")
+        canvas.create_oval(
+            x, y, x + SPACE_SIZE, y + SPACE_SIZE, fill=FOOD_COLOR, tags="food"
+        )
 
 
 def next_turn(snake, food):
@@ -64,7 +71,9 @@ def next_turn(snake, food):
 
     snake.coordinates.insert(0, (x, y))
 
-    square = canvas.create_rectangle(x, y, x + SPACE_SIZE, y + SPACE_SIZE, fill=SNAKE_BODY_COLOR)
+    square = canvas.create_rectangle(
+        x, y, x + SPACE_SIZE, y + SPACE_SIZE, fill=SNAKE_BODY_COLOR
+    )
     snake.squares.insert(0, square)
 
     for body_square in snake.squares[1:]:
@@ -73,7 +82,6 @@ def next_turn(snake, food):
     canvas.itemconfig(snake.squares[0], fill=SNAKE_HEAD_COLOR)
 
     if x == food.coordinates[0] and y == food.coordinates[1]:
-
         global score
 
         score += 1
@@ -88,7 +96,6 @@ def next_turn(snake, food):
         food = Food()
 
     else:
-
         del snake.coordinates[-1]
 
         canvas.delete(snake.squares[-1])
@@ -110,17 +117,17 @@ def change_direction():
     else:
         return
 
-    if new_direction == 'left':
-        if direction != 'right':
+    if new_direction == "left":
+        if direction != "right":
             direction = new_direction
-    elif new_direction == 'right':
-        if direction != 'left':
+    elif new_direction == "right":
+        if direction != "left":
             direction = new_direction
-    elif new_direction == 'up':
-        if direction != 'down':
+    elif new_direction == "up":
+        if direction != "down":
             direction = new_direction
-    elif new_direction == 'down':
-        if direction != 'up':
+    elif new_direction == "down":
+        if direction != "up":
             direction = new_direction
 
 
@@ -133,10 +140,12 @@ def add_to_queue(new_input):
     else:
         last_direction = direction
 
-    if (last_direction == "up" and new_input == "down") or \
-        (last_direction == "down" and new_input == "up") or \
-        (last_direction == "right" and new_input == "left") or \
-        (last_direction == "left" and new_input == "right"):
+    if (
+        (last_direction == "up" and new_input == "down")
+        or (last_direction == "down" and new_input == "up")
+        or (last_direction == "right" and new_input == "left")
+        or (last_direction == "left" and new_input == "right")
+    ):
         return
 
     if len(input_queue) == 0 and new_input == direction:
@@ -172,8 +181,14 @@ def game_over():
 
     canvas.delete(ALL)
 
-    canvas.create_text(canvas.winfo_width()/2, canvas.winfo_height()/2,
-                       font=('',70), text="GAME OVER", fill="red", tags="gameover")
+    canvas.create_text(
+        canvas.winfo_width() / 2,
+        canvas.winfo_height() / 2,
+        font=("", 70),
+        text="GAME OVER",
+        fill="red",
+        tags="gameover",
+    )
 
 
 def victory():
@@ -183,10 +198,32 @@ def victory():
     if len(snake.coordinates) >= total_cells:
         canvas.delete(ALL)
 
-        canvas.create_text(canvas.winfo_width() / 2, canvas.winfo_height() / 2,
-                           font=('', 70), text="VICTORY!!!", fill="green", tags="victory")
+        canvas.create_text(
+            canvas.winfo_width() / 2,
+            canvas.winfo_height() / 2,
+            font=("", 70),
+            text="VICTORY!!!",
+            fill="green",
+            tags="victory",
+        )
         return True
     return False
+
+
+def restart_game():
+
+    global snake, food, score, input_queue, direction
+
+    canvas.delete(ALL)
+
+    score = 0
+    direction = "down"
+    input_queue = []
+
+    snake = Snake()
+    food = Food()
+
+    next_turn(snake, food)
 
 
 window = Tk()
@@ -194,9 +231,9 @@ window.title("Snake game")
 window.resizable(False, False)
 
 score = 0
-direction = 'down'
+direction = "down"
 
-label = Label(window, text="Score:{}".format(score), font=('consolas', 40))
+label = Label(window, text="Score:{}".format(score), font=("consolas", 40))
 label.pack()
 
 canvas = Canvas(window, bg=BACKGROUND_COLOR, height=GAME_HEIGHT, width=GAME_WIDTH)
@@ -209,28 +246,29 @@ window_height = window.winfo_height()
 screen_width = window.winfo_screenwidth()
 screen_height = window.winfo_screenheight()
 
-x = int((screen_width/2) - (window_width/2))
-y = int((screen_height/2) - (window_height/2))
+x = int((screen_width / 2) - (window_width / 2))
+y = int((screen_height / 2) - (window_height / 2))
 
 window.geometry(f"{window_width}x{window_height}+{x}+{y}")
 
-for key in ['<Left>', '<a>']:
-    window.bind(key, lambda event, d='left': add_to_queue(d))
-for key in ['<Right>', '<d>']:
-    window.bind(key, lambda event, d='right': add_to_queue(d))
-for key in ['<Up>', '<w>']:
-    window.bind(key, lambda event, d='up': add_to_queue(d))
-for key in ['<Down>', '<s>']:
-    window.bind(key, lambda event, d='down': add_to_queue(d))
+for key in ["<Left>", "<a>"]:
+    window.bind(key, lambda event, d="left": add_to_queue(d))
+for key in ["<Right>", "<d>"]:
+    window.bind(key, lambda event, d="right": add_to_queue(d))
+for key in ["<Up>", "<w>"]:
+    window.bind(key, lambda event, d="up": add_to_queue(d))
+for key in ["<Down>", "<s>"]:
+    window.bind(key, lambda event, d="down": add_to_queue(d))
+
+window.bind("r", lambda event: restart_game())
 
 snake = Snake()
 
 food = Food()
 
 
-
 next_turn(snake, food)
 
 
-
 window.mainloop()
+
